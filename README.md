@@ -40,6 +40,12 @@ Electron + React + TypeScript para escritorio Windows; el mismo código compila 
     SIN_BUILD=1 APP_DIST=<dist de Control de Backlog> CLAVE_CONEXION=backlog.conexion tests/e2e.sh
                                 la app actual de backlog contra la base del CMMS
 
+## Demo web de pruebas
+
+    npm run build:demo     sitio en dist-demo/ con PostgreSQL dentro del navegador (PGlite)
+
+El flujo "Demo web de pruebas" lo publica en https://samuel270302.github.io/cmms-dimelco/. Tiene el mismo esquema que producción (migraciones 001-020) y los datos de prueba de `tests/semilla_e2e.sql`, `tests/semilla_e2e_preventivo.sql` y `tests/semilla_programacion.sql`, con fechas relativas al día en que se abre por primera vez. No usa Supabase: cada navegador guarda sus propios datos (IndexedDB) y la franja de arriba tiene «Reiniciar datos». Usuarios admin@prueba, cap@prueba y cap.vtn@prueba, contraseña `prueba`. Las fotos de backlog no se ven en la demo. La app de escritorio y el sitio normal no incluyen PGlite (alias a `src/demo/sin_demo.ts` en `vite.config.ts`).
+
 ## Entorno de pruebas
 
     tools/entorno_pruebas.sh             base local con datos de las dos apps y la app web en el puerto 5180;

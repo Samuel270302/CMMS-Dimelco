@@ -1,0 +1,39 @@
+name: Demo web de pruebas
+
+# Publica en GitHub Pages (https://samuel270302.github.io/cmms-dimelco/) la demo de
+# pruebas: la app con la base PostgreSQL dentro del navegador (PGlite) y datos de prueba.
+# No usa Supabase ni secretos: cada navegador guarda sus propios datos.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, claude/vigilant-euler-gqgeix]
+    paths-ignore: ['docs/**', '**.md', '.github/workflows/instalador.yml', '.github/workflows/base_de_datos.yml', '.github/workflows/traer_preventivos.yml']
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build:demo
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist-demo
+      - id: despliegue
+        uses: actions/deploy-pages@v4

@@ -10,9 +10,11 @@ const CLAVE = "cmms.conexion";
 
 // "mismo-origen": la base de pruebas se sirve en el mismo servidor que la app
 // (tools/entorno_pruebas.mjs), así funciona también desde la vista previa remota.
-const urlEnv = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+// Demo web (VITE_DEMO=1): dirección ficticia; las llamadas las atiende src/demo/servidor.ts.
+const demo = import.meta.env.VITE_DEMO === "1";
+const urlEnv = demo ? "https://demo.cmms.local" : (import.meta.env.VITE_SUPABASE_URL as string | undefined);
 const urlFija = urlEnv === "mismo-origen" ? window.location.origin : urlEnv;
-const llaveFija = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+const llaveFija = demo ? "demo" : (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined);
 export const conexionFija = Boolean(urlFija && llaveFija);
 
 export function leerConexion(): ConexionConfig | null {

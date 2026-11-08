@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
-import { supabase } from "../lib/supabase";
+import { esDemo, supabase } from "../lib/supabase";
+import { FranjaDemo } from "../demo/AyudaDemo";
 import { useEstadoConexion } from "../lib/conexion";
 import { cambiosPendientes, marcarPendientes } from "../lib/pendientes";
 import DialogoConfirmar from "./DialogoConfirmar";
@@ -224,6 +225,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
       )}
       <main className="contenido">
+        {esDemo && <FranjaDemo />}
         <AvisoActualizacion />
         {children}
       </main>

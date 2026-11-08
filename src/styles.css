@@ -1168,3 +1168,8 @@ dialog.dialogo-ot { width: min(620px, 94vw); }
   .tablero { grid-template-columns: 1fr; }
   .tablero .panel-listos { position: static; max-height: none; }
 }
+
+/* Demo web */
+.ayuda-demo { margin-top: 14px; padding: 10px 12px; background: var(--ambar-suave); border-radius: 6px; font-size: 13px; }
+.ayuda-demo ul { margin: 6px 0 0; padding-left: 18px; }
+.franja-demo { display: flex; gap: 10px; align-items: center; justify-content: space-between; background: var(--ambar-suave); border: 1px solid var(--ambar); border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; font-size: 13px; }

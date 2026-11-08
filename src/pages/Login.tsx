@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabase";
+import { esDemo, supabase } from "../lib/supabase";
+import AyudaDemo from "../demo/AyudaDemo";
 import { borrarConexion, conexionFija } from "../lib/config";
 import logo from "../assets/logo-dimelco.png";
 import logoApp from "../assets/logo-app.svg";
@@ -57,6 +58,7 @@ export default function Login() {
             Cambiar conexión a la base
           </button>
         )}
+        {esDemo && <AyudaDemo />}
         <img className="logo-login" src={logo} alt="Dimelco" />
       </form>
     </div>

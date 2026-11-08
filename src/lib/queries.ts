@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
-import { supabase } from "./supabase";
+import { esDemo, supabase } from "./supabase";
 import { reportarCanal } from "./conexion";
 import { useUnidad } from "./unidad";
 import type { BacklogFila, CapacidadTaller, Catalogo, Equipo, FamiliaSistema, Perfil, SemanasBacklog } from "./types";
@@ -122,6 +122,11 @@ const ESPERA_RECARGA_MS = 1500;
 export function useTiempoReal() {
   const qc = useQueryClient();
   useEffect(() => {
+    // Demo web: no hay servidor de tiempo real; cada acción recarga lo que cambió.
+    if (esDemo) {
+      reportarCanal("SUBSCRIBED");
+      return;
+    }
     let temporizador: ReturnType<typeof setTimeout> | null = null;
     const canal = supabase()
       .channel("cambios-db")
