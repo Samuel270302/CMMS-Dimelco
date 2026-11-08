@@ -1,6 +1,6 @@
 # CMMS Dimelco
 
-Aplicación de mantenimiento que junta Control de Preventivos (preventivo por horómetros) y Control de Backlog (trabajos pendientes con HH, repuestos y programación) en una sola app, con un login, un menú y una base. Las órdenes de trabajo y el tablero de programación de preventivos y correctivos vienen en las versiones siguientes (ver `docs/PLAN_CMMS.md`).
+Aplicación de mantenimiento que junta Control de Preventivos (preventivo por horómetros) y Control de Backlog (trabajos pendientes con HH, repuestos y programación) en una sola app, con un login, un menú y una base. Desde la 0.2.0 tiene un tablero de programación semanal donde se arrastran los PM sugeridos por Control PM y los backlogs listos a cada equipo, día y turno, y se arman las órdenes de trabajo (ver `docs/PLAN_CMMS.md`).
 
 Las dos apps actuales siguen funcionando. La base del CMMS es el proyecto Supabase de backlog; los datos de preventivos se traen una sola vez, con aprobación, siguiendo `docs/FUSION.md`. Después de eso las tres apps leen y graban en la misma base.
 
@@ -11,10 +11,11 @@ Electron + React + TypeScript para escritorio Windows; el mismo código compila 
 - Backlog: migraciones 001 a 018, las mismas del repositorio Backlog-Dimelco. Pantallas en `src/pages`.
 - Preventivo: migración 019, con el esquema de Control de Preventivos 0.6.0 sobre las tablas de backlog (unidades, perfiles, parámetros y equipos son las mismas). Pantallas en `src/preventivo`.
 - Ficha de equipo con pestañas Preventivo y Backlog (`src/pages/FichaEquipoCmms.tsx`).
+- Programación: migración 020 con las órdenes de trabajo (`programar_pm`, `programar_backlog`, `mover_ot`, `quitar_backlog_ot`, `anular_ot`) y el tablero en `src/programacion`. Un backlog que entra a una OT pasa a Programado con `cambiar_estado_backlog()`, así el Calendario de backlog y las apps actuales ven la misma fecha. Las HH estándar de cada PM salen de `pautas_gama` (plan y gama).
 
 ## Estructura
 
-    supabase/migrations/   001-018 backlog, 019 preventivo
+    supabase/migrations/   001-018 backlog, 019 preventivo, 020 órdenes de trabajo
     supabase/instalar_todo.sql   todas las migraciones en un archivo (tools/armar_instalacion.sh)
     src/pages, src/components, src/lib     backlog y partes comunes
     src/preventivo/        pantallas, consultas y componentes de preventivo
@@ -32,6 +33,8 @@ Electron + React + TypeScript para escritorio Windows; el mismo código compila 
     tests/ensayo_traer_preventivos.sh   ensayo de la copia de preventivos en dos PostgreSQL temporales
     tests/e2e.sh                         backlog en navegador (35 pasos)
     tests/e2e.sh flujo_preventivo.mjs    preventivo en navegador
+    tests/e2e.sh flujo_tablero.mjs       tablero de programación en navegador (arrastrar, agrupar, mover, anular)
+    tests/prueba_ot.sh                   funciones de las órdenes de trabajo en PostgreSQL
     SIN_BUILD=1 APP_DIST=<dist de Control de Preventivos> tests/e2e.sh compat_preventivos.mjs
                                 la app actual de preventivos contra la base del CMMS
     SIN_BUILD=1 APP_DIST=<dist de Control de Backlog> CLAVE_CONEXION=backlog.conexion tests/e2e.sh
@@ -39,7 +42,8 @@ Electron + React + TypeScript para escritorio Windows; el mismo código compila 
 
 ## Entorno de pruebas
 
-    tools/entorno_pruebas.sh             base local con datos de las dos apps y la app web en el puerto 5180
+    tools/entorno_pruebas.sh             base local con datos de las dos apps y la app web en el puerto 5180;
+                                         si la base ya existe, aplica las migraciones nuevas sin borrar datos
     tools/entorno_pruebas.sh reiniciar   vuelve a crear la base de pruebas desde cero
     tools/entorno_pruebas.sh detener     apaga la app y la base (los datos quedan en .pruebas/)
 

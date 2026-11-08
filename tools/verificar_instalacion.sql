@@ -40,6 +40,9 @@ with chequeos(orden, punto, ok, si_falta) as (
       to_regclass('public.v_control_pm') is not null and to_regclass('public.v_control_40') is not null
       and exists (select 1 from pg_trigger where tgname = 'validar_lectura'),
       'Ejecutar 019_preventivos.sql'),
+  (6.97, 'Órdenes de trabajo y tablero (020)',
+      to_regclass('public.v_ot') is not null and exists (select 1 from pg_proc where proname = 'programar_pm'),
+      'Ejecutar 020_ordenes_trabajo.sql'),
   (7, 'Bucket privado backlog-fotos',
       exists (select 1 from storage.buckets where id = 'backlog-fotos' and not public),
       'Ejecutar 007_storage.sql (Storage debe estar habilitado en el proyecto)'),

@@ -1,7 +1,7 @@
 {
   "name": "cmms-dimelco",
   "productName": "CMMS Dimelco",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CMMS de mantenimiento: preventivo por horómetros, backlog y programación",
   "private": true,
   "main": "dist-electron/main.js",

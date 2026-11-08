@@ -60,6 +60,16 @@ SQL
   node "$RAIZ/tools/traer_preventivos.mjs" \
     --origen "postgresql://postgres@localhost:$PGPORT/prev?host=$DIR/pg" \
     --destino "postgresql://postgres@localhost:$PGPORT/cmms?host=$DIR/pg" --grabar | sed 's/^/    /'
+
+  echo "  backlogs listos para programar, capacidad del taller y HH estándar por gama"
+  psql_db cmms -f "$RAIZ/tests/semilla_programacion.sql" >/dev/null
+}
+
+# Base ya creada: aplica las migraciones nuevas sin tocar los datos (igual que en producción).
+actualizar() {
+  echo "Aplicando migraciones nuevas a la base de pruebas (los datos se conservan)"
+  bash "$RAIZ/tools/armar_instalacion.sh" >/dev/null
+  psql_db cmms --single-transaction -f "$RAIZ/supabase/instalar_todo.sql" >/dev/null
 }
 
 case "${1:-iniciar}" in
@@ -74,7 +84,7 @@ case "${1:-iniciar}" in
   reiniciar) detener; rm -rf -- "$RAIZ/.pruebas/pg"; crear ;;
   iniciar)
     detener
-    if [ -d "$DIR/pg/datos" ]; then arrancar_base; else crear; fi ;;
+    if [ -d "$DIR/pg/datos" ]; then arrancar_base; actualizar; else crear; fi ;;
   *) echo "Uso: tools/entorno_pruebas.sh [iniciar|reiniciar|detener|estado]"; exit 2 ;;
 esac
 

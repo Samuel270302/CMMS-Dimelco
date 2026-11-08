@@ -46,6 +46,11 @@ const enlaces: Enlace[] = [
   { a: "/capacidad", texto: "Capacidad del taller", icono: <IconoAjustes />, captura: true },
 ];
 
+// Programación de preventivos y correctivos.
+const enlacesProgramacion: Enlace[] = [
+  { a: "/programacion", texto: "Tablero semanal", icono: <IconoCalendario />, captura: false },
+];
+
 // Preventivo por horómetros.
 const enlacesPreventivo: Enlace[] = [
   { a: "/preventivo/control", texto: "Control PM", icono: <IconoTablero />, captura: false },
@@ -61,7 +66,7 @@ const enlacesPreventivo: Enlace[] = [
 
 // Nombre de la pantalla para el encabezado del celular.
 function tituloDe(ruta: string): string {
-  const todos = [...enlaces, ...enlacesPreventivo, ...enlacesAdmin];
+  const todos = [...enlacesProgramacion, ...enlaces, ...enlacesPreventivo, ...enlacesAdmin];
   const exacto = todos.find((e) => e.a === ruta);
   if (exacto) return exacto.texto;
   if (ruta.startsWith("/backlog/")) return "Backlog";
@@ -95,7 +100,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => setMasAbierto(false), [pathname]);
   // Barra inferior del celular: Control PM, Lecturas (capturador) o Calendario, Por equipo.
   const barra = [
-    enlacesPreventivo[0],
+    enlacesProgramacion[0],
     puedeCapturar && !esAdmin ? enlacesPreventivo[3] : enlaces[3],
     enlaces[1],
   ];
@@ -153,6 +158,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
         <SelectorUnidad />
         <nav>
+          <div className="menu-seccion">Programación</div>
+          {enlacesProgramacion.map((e) => (
+            <NavLink key={e.a} to={e.a} onClick={(ev) => alNavegar(ev, e.a)} className={({ isActive }) => (isActive ? "activo" : "")}>
+              {e.icono}
+              {e.texto}
+            </NavLink>
+          ))}
           <div className="menu-seccion">Preventivo</div>
           {enlacesPreventivo.filter((e) => puedeCapturar || !e.captura).map((e) => (
             <NavLink key={e.a} to={e.a} onClick={(ev) => alNavegar(ev, e.a)} className={({ isActive }) => (isActive ? "activo" : "")}>

@@ -111,6 +111,11 @@ const TABLAS = [
   "cambios_horometro",
   "registros_manuales",
   "columnas_control",
+  // Programación
+  "ordenes_trabajo",
+  "ot_backlogs",
+  "ot_hh",
+  "pautas_gama",
 ];
 const ESPERA_RECARGA_MS = 1500;
 

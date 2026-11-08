@@ -22,6 +22,7 @@ import Indicadores from "./pages/Indicadores";
 import Equipos from "./pages/Equipos";
 import Catalogos from "./pages/Catalogos";
 import Parametros from "./pages/Parametros";
+import Tablero from "./programacion/Tablero";
 import ControlPm from "./preventivo/pages/ControlPm";
 import Control40 from "./preventivo/pages/Control40";
 import Graficas from "./preventivo/pages/Graficas";
@@ -69,6 +70,7 @@ function ConRealtime({ esAdmin, puedeCapturar }: { esAdmin: boolean; puedeCaptur
     <Layout>
       <Routes>
         <Route path="/" element={<Navigate to="/preventivo/control" replace />} />
+        <Route path="/programacion" element={<Tablero />} />
         <Route path="/preventivo/control" element={<ControlPm />} />
         <Route path="/preventivo/rutina40" element={<Control40 />} />
         <Route path="/preventivo/graficas" element={<Graficas />} />

@@ -9,7 +9,7 @@ Nada de esto corre solo. Los dos flujos de GitHub Actions que tocan producción 
 1. En el repositorio CMMS-Dimelco, Settings > Secrets and variables > Actions, crear dos secretos:
    - `SUPABASE_DB_URL`: cadena de conexión del proyecto de backlog (la misma que tiene el repositorio Backlog-Dimelco; pooler en modo sesión, puerto 5432).
    - `DSN_PREVENTIVOS`: cadena de conexión del proyecto de preventivos (la misma `SUPABASE_DB_URL` del repositorio Control-de-preventivos-Dimelco).
-2. Actions > "Actualizar base de datos" > Run workflow, escribir `APLICAR`. Aplica `supabase/instalar_todo.sql`: las migraciones 001 a 018 ya están en la base de backlog y se saltan; la 019 agrega las tablas y vistas de preventivos, vacías. La app de backlog sigue funcionando igual. Al final muestra la verificación; el punto "Preventivo por horómetros (019)" tiene que salir OK.
+2. Actions > "Actualizar base de datos" > Run workflow, escribir `APLICAR`. Aplica `supabase/instalar_todo.sql`: las migraciones 001 a 018 ya están en la base de backlog y se saltan; la 019 agrega las tablas y vistas de preventivos y la 020 las de órdenes de trabajo, vacías. La app de backlog sigue funcionando igual. Al final muestra la verificación; el punto "Preventivo por horómetros (019)" tiene que salir OK.
 3. Actions > "Traer datos de preventivos" > Run workflow, modo `ensayo`. Hace la copia completa y la verificación dentro de una transacción y la deshace: ninguna base cambia. Revisar en el registro:
    - conteos origen / destino de cada tabla, todos iguales;
    - vistas de cálculo con todas las filas iguales;

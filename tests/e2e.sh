@@ -19,7 +19,10 @@ PSQL=(psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q -X)
 "${PSQL[@]}" -f "$RAIZ/tools/base_local.sql"
 for f in "$RAIZ"/supabase/migrations/*.sql; do "${PSQL[@]}" -f "$f"; done
 "${PSQL[@]}" -f "$RAIZ/tests/semilla_e2e.sql"
-case "${1:-}" in flujo_preventivo.mjs|compat_preventivos.mjs) "${PSQL[@]}" -f "$RAIZ/tests/semilla_e2e_preventivo.sql" ;; esac
+case "${1:-}" in
+  flujo_preventivo.mjs|compat_preventivos.mjs) "${PSQL[@]}" -f "$RAIZ/tests/semilla_e2e_preventivo.sql" ;;
+  flujo_tablero.mjs) for s in semilla_e2e_preventivo semilla_programacion; do "${PSQL[@]}" -f "$RAIZ/tests/$s.sql" >/dev/null; done ;;
+esac
 GUION="${1:-flujo_backlog.mjs}"
 if [ "${SIN_BUILD:-}" != "1" ]; then
   case "$GUION" in

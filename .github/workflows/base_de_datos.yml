@@ -56,7 +56,7 @@ jobs:
       - name: Verificar instalación
         run: |
           /usr/lib/postgresql/17/bin/psql "$DB_URL" -X -f tools/verificar_instalacion.sql
-          falta=$(/usr/lib/postgresql/17/bin/psql "$DB_URL" -X -At -F'|' -f tools/verificar_instalacion.sql | awk -F'|' '$1<=12 && $3=="FALTA"')
+          falta=$(/usr/lib/postgresql/17/bin/psql "$DB_URL" -X -At -F'|' -f tools/verificar_instalacion.sql | awk -F'|' '$1<=13 && $3=="FALTA"')
           if [ -n "$falta" ]; then
             echo "::error::Puntos de la base en FALTA después de migrar: $falta"
             exit 1

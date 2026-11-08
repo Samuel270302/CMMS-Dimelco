@@ -1117,3 +1117,54 @@ a.tarjeta-cal { display: block; color: inherit; text-decoration: none; }
 .lista-unidades .campo-check { justify-content: flex-start; font-size: 13px; }
 .lista-unidades input[type="checkbox"] { width: 16px; height: 16px; padding: 0; margin: 0; flex: none; accent-color: var(--ambar); }
 .tabla-usuarios td select { min-width: 150px; }
+
+/* Tablero de programación (CMMS 0.2.0) */
+.tablero { display: grid; grid-template-columns: 230px 1fr; gap: 12px; align-items: start; }
+.tablero .panel-listos { max-height: calc(100vh - 230px); overflow-y: auto; position: sticky; top: 0; }
+.tablero .panel-listos h2 { margin-top: 12px; }
+.grilla-tablero table { table-layout: fixed; min-width: 1500px; border-collapse: collapse; }
+.grilla-tablero th, .grilla-tablero td { vertical-align: top; }
+.grilla-tablero .col-equipo { width: 96px; font-weight: 600; }
+.grilla-tablero th.th-turno { font-size: 11px; font-weight: 600; color: var(--texto-suave); padding: 2px 4px; }
+.grilla-tablero td { padding: 3px; height: 58px; border-left: 1px solid var(--borde); }
+.grilla-tablero td.noche { background: #f7f7f9; }
+.grilla-tablero tr:nth-child(even) td { background: transparent; }
+.grilla-tablero tr:hover td { background: transparent; }
+.grilla-tablero td.noche, .grilla-tablero tr:nth-child(even) td.noche { background: #f6f7fa; }
+.grilla-tablero .hoy { background: #fffbea !important; }
+.grilla-tablero th.hoy { box-shadow: inset 0 -3px 0 var(--ambar); }
+.grilla-tablero .pasado { background: #f1f1ef !important; color: var(--texto-suave); }
+.grilla-tablero .admite { outline: 2px dashed var(--ambar); outline-offset: -3px; }
+.grilla-tablero .sobre { background: var(--ambar-suave) !important; }
+.grilla-tablero td.choque { box-shadow: inset 0 0 0 2px var(--rojo-letra); }
+.grilla-tablero tr.fila-grupo td { height: auto; background: var(--panel-2) !important; font-weight: 700; font-size: 12px; padding: 4px 8px; color: var(--oscuro-2); }
+.tarjeta-ot { cursor: pointer; }
+.grilla-tablero .tarjeta-ot { font-size: 11px; padding: 3px 5px; margin-bottom: 3px; }
+.grilla-tablero .tarjeta-ot .tc-folio { overflow-wrap: anywhere; font-size: 10.5px; }
+.grilla-tablero .tarjeta-ot .tc-trabajo { -webkit-line-clamp: 3; }
+.tarjeta-ot.t-preventiva { border-left-color: #1f6f3f; }
+.tarjeta-ot.t-rutina { border-left-color: #2e86c1; }
+.tarjeta-ot.t-correctiva { border-left-color: #c55a11; }
+.tarjeta-ot.t-emergencia { border-left-color: var(--rojo-letra); background: #fff6f5; }
+.tarjeta-ot.t-sin-ot { border-left-color: #8c8c8c; border-style: dashed; border-left-style: solid; background: #fafafa; }
+.tarjeta-ot.admite { outline: 2px dashed var(--ambar); }
+.tarjeta-ot.sobre { background: var(--ambar-suave); }
+.tc-aviso { background: var(--aviso); color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.tc-estado { font-size: 11px; color: var(--texto-suave); }
+.leyenda-tablero { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--texto-suave); margin: 4px 0 10px; }
+.leyenda-tablero .ley { border-left: 4px solid; padding-left: 6px; }
+.leyenda-tablero .t-preventiva { border-color: #1f6f3f; }
+.leyenda-tablero .t-rutina { border-color: #2e86c1; }
+.leyenda-tablero .t-correctiva { border-color: #c55a11; }
+.leyenda-tablero .t-emergencia { border-color: var(--rojo-letra); }
+.leyenda-tablero .t-sin-ot { border-color: #8c8c8c; }
+dialog.dialogo-ot { width: min(620px, 94vw); }
+.dot-subtitulo { font-size: 13px; margin: 14px 0 4px; }
+.dot-backlog { display: flex; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--borde); }
+.dot-desc { flex: 1; min-width: 0; font-size: 13px; }
+.dot-eventos { margin: 0; padding-left: 18px; font-size: 12px; max-height: 140px; overflow-y: auto; }
+.aviso-ot { background: var(--amarillo-fondo); color: var(--amarillo-letra); padding: 6px 8px; border-radius: 6px; font-size: 13px; }
+@media (max-width: 767px) {
+  .tablero { grid-template-columns: 1fr; }
+  .tablero .panel-listos { position: static; max-height: none; }
+}
