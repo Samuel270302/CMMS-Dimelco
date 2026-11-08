@@ -1,0 +1,57 @@
+name: Traer datos de preventivos
+
+# Copia los datos de Control de Preventivos (equipos, componentes, lecturas, PM, cambios de
+# horómetro, planes y usuarios) a la base del CMMS con tools/traer_preventivos.mjs.
+# Solo a mano. Antes: correr "Actualizar base de datos" para que exista el esquema 019.
+#   ensayo  hace la copia y la verificación y las deshace; no cambia ninguna base
+#   grabar  confirma la copia solo si la verificación sale sin diferencias
+# La base de preventivos se abre en solo lectura.
+# Secretos (Settings > Secrets and variables > Actions):
+#   DSN_PREVENTIVOS   cadena de conexión del proyecto de preventivos (pooler, modo sesión, puerto 5432)
+#   SUPABASE_DB_URL   cadena de conexión del proyecto de backlog (base del CMMS)
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'ensayo o grabar'
+        required: true
+        default: 'ensayo'
+        type: choice
+        options: [ensayo, grabar]
+      confirmar:
+        description: 'Para grabar, escriba GRABAR'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: base-de-datos
+  cancel-in-progress: false
+
+jobs:
+  traer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DSN_PREVENTIVOS: ${{ secrets.DSN_PREVENTIVOS }}
+      DSN_CMMS: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - name: Verificar secretos y confirmación
+        run: |
+          if [ -z "$DSN_PREVENTIVOS" ] || [ -z "$DSN_CMMS" ]; then
+            echo "::error::Faltan los secretos DSN_PREVENTIVOS y SUPABASE_DB_URL en Settings > Secrets and variables > Actions"
+            exit 1
+          fi
+          if [ "${{ inputs.modo }}" = "grabar" ] && [ "${{ inputs.confirmar }}" != "GRABAR" ]; then
+            echo "::error::Para grabar hay que escribir GRABAR en el campo de confirmación"
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - name: Copiar
+        run: node tools/traer_preventivos.mjs ${{ inputs.modo == 'grabar' && '--grabar' || '' }}
