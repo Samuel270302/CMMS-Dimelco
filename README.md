@@ -37,6 +37,14 @@ Electron + React + TypeScript para escritorio Windows; el mismo código compila 
     SIN_BUILD=1 APP_DIST=<dist de Control de Backlog> CLAVE_CONEXION=backlog.conexion tests/e2e.sh
                                 la app actual de backlog contra la base del CMMS
 
+## Entorno de pruebas
+
+    tools/entorno_pruebas.sh             base local con datos de las dos apps y la app web en el puerto 5180
+    tools/entorno_pruebas.sh reiniciar   vuelve a crear la base de pruebas desde cero
+    tools/entorno_pruebas.sh detener     apaga la app y la base (los datos quedan en .pruebas/)
+
+No toca Supabase. Los datos de preventivos entran con `tools/traer_preventivos.mjs`, la misma copia que se usará en producción. Usuarios: admin@prueba, cap@prueba (HEMCO), cap.vtn@prueba y cap.prev@prueba (Veta Nueva), todos con la contraseña `prueba`. Sin tiempo real: los cambios de otro usuario se ven al recargar.
+
 ## Flujos de GitHub Actions
 
 - Pruebas: en cada push; base local, compilación y ensayo de la copia.

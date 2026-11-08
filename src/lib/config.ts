@@ -8,7 +8,10 @@ export interface ConexionConfig {
 
 const CLAVE = "cmms.conexion";
 
-const urlFija = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+// "mismo-origen": la base de pruebas se sirve en el mismo servidor que la app
+// (tools/entorno_pruebas.mjs), así funciona también desde la vista previa remota.
+const urlEnv = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const urlFija = urlEnv === "mismo-origen" ? window.location.origin : urlEnv;
 const llaveFija = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 export const conexionFija = Boolean(urlFija && llaveFija);
 

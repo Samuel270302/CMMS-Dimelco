@@ -90,7 +90,7 @@ function extraerArchivo(crudo, tipo) {
   return { bytes: crudo, tipo: "application/octet-stream" };
 }
 
-export async function iniciarServidorRest({ conexion, puerto }) {
+export async function iniciarServidorRest({ conexion, puerto, claveAcceso = null }) {
   const pool = new pg.Pool(conexion);
   const archivos = new Map(); // "<bucket>/<ruta>" -> { bytes, tipo }
 
@@ -162,6 +162,58 @@ export async function iniciarServidorRest({ conexion, puerto }) {
       return json(400, { statusCode: "403", error: "Unauthorized", message: e.message });
     }
   }
+  // Inicio de sesión de prueba: con claveAcceso, cualquier usuario de auth.users entra con
+  // esa contraseña y recibe un token sin firma (como los de las pruebas). Sin claveAcceso
+  // (pruebas automáticas, que ya traen la sesión) responde vacío como antes.
+  async function autenticar(req, res, url, cors) {
+    const json = (estado, obj) => {
+      res.writeHead(estado, { ...cors, "content-type": "application/json" });
+      res.end(JSON.stringify(obj));
+    };
+    if (!claveAcceso) return json(200, {});
+    const ruta = url.pathname.slice("/auth/v1/".length);
+    const sesionDe = (u) => {
+      const exp = Math.floor(Date.now() / 1000) + 8 * 3600;
+      const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
+      const usuario = { id: u.id, email: u.email, aud: "authenticated", role: "authenticated",
+        app_metadata: {}, user_metadata: u.raw_user_meta_data ?? {}, created_at: new Date().toISOString() };
+      return {
+        access_token: `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub: u.id, role: "authenticated", email: u.email, exp })}.prueba`,
+        token_type: "bearer", expires_in: 8 * 3600, expires_at: exp, refresh_token: u.id, user: usuario,
+      };
+    };
+    let crudo = "";
+    for await (const trozo of req) crudo += trozo;
+    const datos = crudo ? JSON.parse(crudo) : {};
+    try {
+      if (ruta === "token" && url.searchParams.get("grant_type") === "password") {
+        const { rows } = await pool.query("select id, email, raw_user_meta_data from auth.users where lower(email) = lower($1)", [datos.email ?? ""]);
+        if (!rows[0] || datos.password !== claveAcceso)
+          return json(400, { error: "invalid_grant", error_description: "Invalid login credentials", msg: "Invalid login credentials" });
+        return json(200, sesionDe(rows[0]));
+      }
+      if (ruta === "token" && url.searchParams.get("grant_type") === "refresh_token") {
+        const { rows } = await pool.query("select id, email, raw_user_meta_data from auth.users where id::text = $1", [datos.refresh_token ?? ""]);
+        if (!rows[0]) return json(400, { error: "invalid_grant", error_description: "Invalid Refresh Token" });
+        return json(200, sesionDe(rows[0]));
+      }
+      if (ruta === "user" && req.method === "GET") {
+        const u = usuarioDe(req);
+        const { rows } = await pool.query("select id, email, raw_user_meta_data from auth.users where id::text = $1", [u?.sub ?? ""]);
+        if (!rows[0]) return json(401, { msg: "Sesión no válida" });
+        return json(200, sesionDe(rows[0]).user);
+      }
+      if (ruta === "user" && req.method === "PUT") return json(200, sesionDe({ id: usuarioDe(req)?.sub, email: usuarioDe(req)?.email }).user);
+      if (ruta === "logout") {
+        res.writeHead(204, cors);
+        return res.end();
+      }
+      return json(200, {});
+    } catch (e) {
+      return json(400, { msg: e.message });
+    }
+  }
+
   const servidor = createServer(async (req, res) => {
     const cors = {
       "access-control-allow-origin": "*",
@@ -171,10 +223,7 @@ export async function iniciarServidorRest({ conexion, puerto }) {
     };
     if (req.method === "OPTIONS") return res.writeHead(204, cors).end();
     const url = new URL(req.url, "http://x");
-    if (url.pathname.startsWith("/auth/v1/")) {
-      res.writeHead(200, { ...cors, "content-type": "application/json" });
-      return res.end("{}");
-    }
+    if (url.pathname.startsWith("/auth/v1/")) return autenticar(req, res, url, cors);
     if (url.pathname.startsWith("/storage/v1/")) return almacenamiento(req, res, url, cors);
     // Imitación de la función de borde admin-usuarios (solo el alta): hace lo mismo que
     // supabase/functions/admin-usuarios con la llave de servicio.
